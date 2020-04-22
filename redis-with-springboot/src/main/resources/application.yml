@@ -1,0 +1,16 @@
+spring:
+  # redis配置
+  redis:
+    # 指定使用第几个库，默认是0
+    database: 0
+    # 主机地址
+    host: 127.0.0.1
+    # 端口
+    port: 6379
+    # 连接超时时间
+    timeout: 2000
+    # 设置缓存的前缀,如果你自定义了自己的CacheManager,又没有用到这里的设置,那么此设置会失效
+    # 因为冒号在yml中有特殊含义,所以整个用引号引起来可以起到转意的作用
+  cache:
+    redis:
+      key-prefix: 'mykey:'

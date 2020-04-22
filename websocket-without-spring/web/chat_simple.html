@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat demo</title>
+</head>
+<body>
+
+<div>
+
+    <div>
+        <button id="connect" onclick="connect();">连接</button>
+        <button id="disconnect"  onclick="disconnect();">
+            离线
+        </button>
+    </div>
+    <br/>
+    <div id="conversationDiv">
+        <input type="text" id="text" placeholder="请输入信息..."/>
+        <button id="sendMessage" onclick="sendMessage();">Send</button>
+        <p id="response"></p>
+    </div>
+</div>
+
+<script>
+    var ws = null;
+
+    function connect() {
+
+        ws = new WebSocket('ws://localhost:8080/chatsimple' );
+        ws.onopen = function (evt) {
+            showMessage("connection success--");
+        };
+
+        ws.onmessage = function (msg) {
+            console.log("--received msg--:" + msg.data);
+            showMessage(msg.data);
+        }
+        ws.onerror = function (err) {
+            alert('出错了!');
+            console.log( err);
+        }
+    }
+
+    function disconnect() {
+        if (ws == null) return;
+
+        ws.close();
+        showMessage("connection closed--");
+    }
+
+    function sendMessage() {
+        // readyState有这么4个值,其中OPEN值为1,CLOSED值为3,CONNECTING OPEN CLOSING or CLOSED
+
+        //重复用同一个名字连接时,创建的ws对象状态会处于CLOSED,因为服务端不允许同名用户连接
+        if (ws.readyState === ws.CLOSED) return;
+
+        var text = document.getElementById('text').value;
+        ws.send(text);
+    }
+
+    function showMessage(messageOutput) {
+        var response = document.getElementById('response');
+        var p = document.createElement('p');
+        p.style.wordWrap = 'break-word';
+        p.appendChild(document.createTextNode(messageOutput));
+        response.appendChild(p);
+    }
+
+</script>
+</body>
+</html>

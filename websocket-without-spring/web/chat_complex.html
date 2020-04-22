@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<select id="onlineUsers" multiple="multiple"  >
+
+</select>
+<br/>
+<input type="text" id="username" placeholder="username"/>
+<input type="button" value="connect" id="btnConnect"/>
+<br/>
+<input type="text" id="msg" placeholder="message"/>
+<input type="button" value="send" id="btnSend"/>
+
+<div id="container">
+
+
+
+</div>
+<script>
+
+   var ws;
+    var btnConnect = document.getElementById("btnConnect");
+    btnConnect.onclick=function () {
+        var username = document.getElementById("username").value;
+         ws = new WebSocket("ws://localhost:8080/chatcomplex/" + username);
+        ws.onmessage=function (evt) {
+            var msg = evt.data;
+            if(msg.indexOf("msg:") >= 0 ){
+                displayMsg(evt.data);
+            }else{
+                var onlineUsers = document.getElementById("onlineUsers");
+                //先清空列表框里的数据,因为每次收到的用户都是所有的在线用户
+                onlineUsers.innerHTML = "";
+                var users = msg.split(",");
+                for (var i = 0; i < users.length; i++) {
+                    var userOption = document.createElement("option");
+                    userOption.value = users[i];
+                    userOption.innerText = users[i];
+                    onlineUsers.appendChild(userOption);
+                }
+
+
+            }
+
+        }
+    }
+    var btnSend = document.getElementById("btnSend");
+    btnSend.onclick=function () {
+//*:aaa,b:xxx
+        var msg = document.getElementById("msg").value;
+        var selectedUser = document.getElementById("onlineUsers").value;
+        if(selectedUser!=null && selectedUser.length>0){
+            ws.send(selectedUser + ":" + msg);
+        }else{
+            ws.send("*:" + msg);
+        }
+
+
+    }
+
+    function displayMsg(msg) {
+        var p = document.createElement("p");
+        p.innerHTML = msg;
+        var c = document.getElementById("container");
+        c.appendChild(p);
+    }
+
+</script>
+</body>
+</html>

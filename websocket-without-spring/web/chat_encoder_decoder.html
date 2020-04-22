@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat demo</title>
+</head>
+<body>
+
+<div>
+
+    <select id="users">
+
+    </select>
+</div>
+
+
+<div>
+    <div>
+        <input type="text" id="from" placeholder="请输入名字"/>
+    </div>
+    <br />
+
+    <div>
+        <input type="text" id="destination" placeholder="请输入对方名字"/>
+    </div>
+    <br />
+
+    <div>
+        <button id="connect" onclick="connect();">连接</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">
+            离线
+        </button>
+    </div>
+    <br />
+    <div id="conversationDiv">
+        <input type="text" id="text" placeholder="请输入信息..."/>
+        <button id="sendMessage" onclick="sendMessage();">Send</button>
+        <p id="response"></p>
+    </div>
+</div>
+
+<script>
+    var ws =null;
+    function connect() {
+        var from = document.getElementById('from').value;
+        ws = new WebSocket('ws://localhost:8080/chat/'+from);
+        ws.onopen =function (evt) {
+            showMessage("connection success--");
+        };
+
+        ws.onmessage = function (evt) {
+            var msg = JSON.parse(evt.data);
+            console.log("--received msg--:");
+            console.log(msg);
+            if(msg.type=="msg") {
+                showMessage(msg.msg);
+            }else if (msg.type == "online") {
+                var usersList = document.getElementById("users");
+                usersList.innerHTML = "";
+                var onlineUsers = msg.onlineUsers.split(",");
+
+                for(var i=0;i<onlineUsers.length;i++){
+                    var userOption = document.createElement("option");
+                    userOption.innerText = onlineUsers[i];
+                    usersList.appendChild(userOption);
+                }
+            }
+        }
+
+
+    }
+
+
+
+
+    function disconnect() {
+        ws.close();
+        showMessage("connection closed--");
+    }
+
+    function sendMessage() {
+        // readyState有这么4个值,其中OPEN值为1,CLOSED值为3,CONNECTING OPEN CLOSING or CLOSED
+
+        //重复用同一个名字连接时,创建的ws对象状态会处于CLOSED,因为服务端不允许同名用户连接
+        if(ws.readyState === ws.CLOSED) return;
+
+        var from = document.getElementById('from').value;
+        var destination = document.getElementById('destination').value;
+        var text = document.getElementById('text').value;
+        ws.send(
+            JSON.stringify({'from':from,'destination':destination, 'msg':text}));
+    }
+
+    function showMessage(messageOutput) {
+        var response = document.getElementById('response');
+        var p = document.createElement('p');
+        p.style.wordWrap = 'break-word';
+        p.appendChild(document.createTextNode(messageOutput));
+        response.appendChild(p);
+    }
+
+</script>
+</body>
+</html>

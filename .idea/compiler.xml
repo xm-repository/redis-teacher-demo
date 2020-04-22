@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="redis-with-spring" />
+        <module name="redis-without-spring" />
+        <module name="websocket-without-spring" />
+        <module name="redis-with-springboot" />
+        <module name="websocket-with-spring" />
+        <module name="task" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="redis-with-spring" options="" />
+      <module name="redis-with-springboot" options="-parameters" />
+      <module name="redis-without-spring" options="" />
+      <module name="task" options="" />
+      <module name="websocket-with-spring" options="" />
+      <module name="websocket-without-spring" options="" />
+    </option>
+  </component>
+</project>
